@@ -118,14 +118,26 @@ def structural_relation(a: Claim, b: Claim, rel_tol: float = 0.01) -> RelationEd
     if a.referent != b.referent:
         return RelationEdge(a.claim_id, b.claim_id, Relation.INDEPENDENT, "structural:referent")
 
+    # Type before polarity, deliberately. A type mismatch means the two sides
+    # disagree about what KIND of thing the referent is, and a polarity flag
+    # read off a claim whose type is already wrong is not evidence of
+    # anything - the extractor that mistyped the value had no better grip on
+    # the negation. Reporting `structural:negation` there names a real
+    # disagreement for a fabricated reason, and sends the operator to fix the
+    # documents when the bug is in the schema. `structural:type-mismatch`
+    # abstains and says which one to fix.
+    if a.value_type != b.value_type:
+        return RelationEdge(a.claim_id, b.claim_id, Relation.UNDECIDED, "structural:type-mismatch")
+
+    # Polarity outranks the value comparison, which is the opposite call and
+    # for the opposite reason: here both sides agree on the type, so the flag
+    # is trustworthy, and it carries the whole disagreement in the case the
+    # values are the identical string ("permitted" vs "not permitted").
     if a.polarity != b.polarity:
         return RelationEdge(
             a.claim_id, b.claim_id, Relation.CONFLICTS, "structural:negation",
             "same referent, opposite polarity",
         )
-
-    if a.value_type != b.value_type:
-        return RelationEdge(a.claim_id, b.claim_id, Relation.UNDECIDED, "structural:type-mismatch")
 
     if a.value_type is ValueType.NUMERIC:
         x, y = _num(a.value), _num(b.value)

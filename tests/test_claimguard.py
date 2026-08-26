@@ -17,6 +17,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -164,6 +165,37 @@ def test_type_mismatch_and_unparsed_also_stay_off_the_model():
     bases = {e.basis for e in
              resolve([numeric, enum, unparsed_a, unparsed_b], nli=always_contradicts)}
     assert bases == {"structural:type-mismatch", "structural:unparsed"}
+
+
+def test_a_type_mismatch_outranks_a_polarity_flag():
+    """Order inside Layer 1, where two abstention reasons both apply.
+
+    A claim whose `value_type` is wrong was produced by an extractor that
+    misread the passage. Its `polarity` flag came off the same read and is
+    worth no more. Reporting `structural:negation` there names a real
+    disagreement on a fabricated basis and points the operator at the
+    documents, when the bug is in the schema.
+
+    So type is checked FIRST and the pair abstains. Once the types agree the
+    flag is trustworthy, and polarity then outranks the value comparison -
+    which is the opposite ordering, for the opposite reason.
+    """
+    mistyped = Claim("a", "site-a", "r", "p", "permitted", ValueType.NUMERIC,
+                     [SpanRef("d", 0, 1)], polarity=True, load_bearing=True)
+    other = Claim("b", "site-b", "r", "p", "permitted", ValueType.ENUM,
+                  [SpanRef("d", 0, 1)], polarity=False, load_bearing=True)
+
+    edge = structural_relation(mistyped, other)
+    assert edge.relation is Relation.UNDECIDED
+    assert edge.basis == "structural:type-mismatch", \
+        "a polarity flag on a mistyped claim is not evidence of a conflict"
+
+    # ...and with the type bug fixed, the same polarity difference is the
+    # whole finding. K3 is this case, and it must keep escalating.
+    fixed = replace(mistyped, value_type=ValueType.ENUM)
+    edge = structural_relation(fixed, other)
+    assert edge.relation is Relation.CONFLICTS
+    assert edge.basis == "structural:negation"
 
 
 def test_text_pairs_do_reach_the_model():

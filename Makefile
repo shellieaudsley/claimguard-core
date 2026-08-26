@@ -3,12 +3,13 @@ export HF_HUB_OFFLINE := 1
 export TOKENIZERS_PARALLELISM := false
 PY ?= python3
 
-.PHONY: help accept accept-hard verify silo test lint clean
+.PHONY: help accept accept-hard table verify silo test lint clean
 
 help:
 	@echo "verify       the reviewer-verification demo: pointers -> text, per site"
 	@echo "accept       the nine gold cases (add NLI=local for 9/9)"
 	@echo "accept-hard  the same table over prose written to break extractors"
+	@echo "table        the headline table (add NLI=local for the README numbers)"
 	@echo "silo         3 silo runs -> aggregation; only JSONL crosses"
 	@echo "test         the suite"
 
@@ -17,6 +18,9 @@ accept:
 
 accept-hard:
 	$(PY) acceptance.py --corpus corpus_hard.json --nli $(or $(NLI),none)
+
+table:
+	$(PY) table.py --nli $(or $(NLI),none)
 
 silo:
 	@for s in site-a site-b site-c; do \
