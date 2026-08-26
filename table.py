@@ -85,6 +85,36 @@ def render_markdown(rows) -> str:
     return "\n".join(out)
 
 
+def render_edges(claims, nli=None) -> str:
+    """Every cross-silo pair, with the basis that decided it.
+
+    The counts in the header are the same quantities the table reports, so the
+    two blocks cannot drift apart: if this listing and `render_plain` ever
+    disagree, one of them is reading a different run.
+    """
+    from gate import evaluate
+
+    guard = claimguard_merge(claims, nli=nli)
+    report = evaluate(claims, nli=nli)
+    idx = {c.claim_id: c for c in claims}
+
+    out = [
+        f"VERDICT: {report.verdict} | {len(guard.edges)} relations | "
+        f"{len(guard.detected)} conflicts, {len(guard.escalations)} escalated | "
+        f"{len(guard.by_relation(Relation.UNDECIDED))} abstentions",
+        "",
+    ]
+    w = max(len(idx[e.a].referent) for e in guard.edges)
+    for e in sorted(guard.edges, key=lambda e: (idx[e.a].referent, e.a)):
+        a, b = idx[e.a], idx[e.b]
+        pair = f"{a.client_id.rsplit('-', 1)[-1]}/{b.client_id.rsplit('-', 1)[-1]}"
+        out.append(
+            f"{a.referent:<{w}}  {pair}  {e.relation.value.upper():<12} "
+            f"[{e.basis}]".ljust(w + 48) + e.detail
+        )
+    return "\n".join(out)
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
@@ -93,6 +123,8 @@ def main(argv=None) -> int:
     ap.add_argument("--nli", default="none", choices=["none", "local"])
     ap.add_argument("--markdown", action="store_true",
                     help="emit the README block instead of the console table")
+    ap.add_argument("--edges", action="store_true",
+                    help="list every typed edge and the basis that decided it")
     args = ap.parse_args(argv)
 
     fn = None
@@ -104,7 +136,9 @@ def main(argv=None) -> int:
     claims = collect(args.corpus)
     rows = counts(claims, nli=fn)
 
-    if args.markdown:
+    if args.edges:
+        print(render_edges(claims, nli=fn))
+    elif args.markdown:
         print(render_markdown(rows))
     else:
         print(f"{args.corpus} | nli: {'on' if fn else 'off'} | "

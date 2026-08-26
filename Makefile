@@ -20,7 +20,7 @@ accept-hard:
 	$(PY) acceptance.py --corpus corpus_hard.json --nli $(or $(NLI),none)
 
 table:
-	$(PY) table.py --nli $(or $(NLI),none)
+	$(PY) table.py --nli $(or $(NLI),none) $(ARGS)
 
 silo:
 	@for s in site-a site-b site-c; do \
