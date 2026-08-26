@@ -1,0 +1,1 @@
+{"basis": "structural:negation", "claim_ids": ["site-b-c1", "site-c-c1"], "clients": ["site-b", "site-c"], "reason": "same referent, opposite polarity", "referent": "concurrent_anticoagulant", "spans": [{"doc_id": "protocol_v7", "end": 863, "quote": null, "start": 814}, {"doc_id": "handbook", "end": 694, "quote": null, "start": 649}], "values": ["permitted", "permitted"]}

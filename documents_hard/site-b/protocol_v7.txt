@@ -1,0 +1,31 @@
+OBSERVATION PHASE PROTOCOL — VERSION 7
+Riverside Trust | Research Operations | RT-RO-OP-007
+Status: in force | Supersedes: version 6
+
+1. PURPOSE
+Operational summary of version 7 as applied at this trust. Where this document
+and the master protocol differ, the master protocol governs and the difference
+is logged as a deviation.
+
+2. GOVERNANCE
+Adopted following review by the trust research committee. Adoption was
+conditional on the monitoring arrangements in section 3 and on the medication
+restrictions in section 4 being applied without local variation.
+
+3. OBSERVATION SCHEDULE
+Summary of v7 as it applies here. Bulleted because the source document is a table and I have flattened it.
+
+- observation phase: reviewed on a fixed schedule
+  - minimum monitoring interval: 6 hours
+  - deviations: must be logged
+
+Concurrent anticoagulant therapy is not permitted at any point in the observation phase. This holds irrespective of prior stabilisation, so it is not a judgement call.
+
+Where a participant's condition changes unexpectedly, it is the duty registrar who assumes responsibility for the clinical decision.
+5. DEVIATIONS
+Every deviation is logged with a reason code and reviewed at the weekly
+operations meeting. Reason codes are held in appendix B.
+
+6. CONTACTS
+Operational queries go to research operations. Clinical queries go to the site
+investigator.

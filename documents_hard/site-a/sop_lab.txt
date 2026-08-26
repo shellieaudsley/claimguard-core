@@ -1,0 +1,32 @@
+STANDARD OPERATING PROCEDURE — SPECIMEN HANDLING
+Northgate General Laboratory | SOP-LAB-014 | Revision 6
+Approved by: Laboratory Director | Next review: annual
+
+1. SCOPE
+Covers receipt, labelling, storage and dispatch of study specimens. Analytical
+method is held separately in SOP-LAB-021 and is out of scope here.
+
+2. RECEIPT AND LABELLING
+Specimens are checked against the request form on receipt. Discrepancies in
+participant identifier, collection time or sample type are recorded and the
+collecting ward contacted before the specimen is processed. Unlabelled
+specimens are not processed under any circumstances.
+
+3. STORAGE
+The lab SOP is mostly logistics, but there is one substantive line in it.
+
+Plasma is held chilled rather than frozen — the specimen storage category for plasma is refrigerated, and frozen is reserved for the long-term archive.
+
+Courier collection is daily at 16:00, which is not something the protocol constrains.
+4. DISPATCH
+Specimens are logged out at the point of collection. The courier signs the
+manifest and a copy is retained at the site for twelve months.
+
+5. EQUIPMENT
+Storage equipment is temperature-logged continuously. Excursions outside the
+specified range trigger an alert to the on-call biomedical scientist, who
+records the excursion and assesses whether affected specimens remain viable.
+
+6. DEVIATIONS
+Any deviation from this SOP is recorded on the laboratory deviation form and
+reviewed at the monthly quality meeting.

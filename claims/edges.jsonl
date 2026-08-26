@@ -1,0 +1,5 @@
+{"a": "site-a-c1", "b": "site-b-c3", "basis": "nli:low-confidence", "detail": "neutral@0.00", "relation": "undecided", "score": null}
+{"a": "site-a-c1", "b": "site-c-c2", "basis": "nli:low-confidence", "detail": "neutral@0.00", "relation": "undecided", "score": null}
+{"a": "site-b-c3", "b": "site-c-c2", "basis": "nli:low-confidence", "detail": "neutral@0.00", "relation": "undecided", "score": null}
+{"a": "site-a-c2", "b": "site-c-c5", "basis": "structural:enum", "detail": "refrigerated vs frozen", "relation": "conflicts", "score": null}
+{"a": "site-b-c1", "b": "site-c-c1", "basis": "structural:negation", "detail": "same referent, opposite polarity", "relation": "conflicts", "score": null}

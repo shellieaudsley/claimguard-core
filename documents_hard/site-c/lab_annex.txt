@@ -1,0 +1,15 @@
+LABORATORY ANNEX — SPECIMEN STORAGE
+Eastfield Unit | Annex to SOP-LAB-014
+This annex records where local practice differs from the parent SOP, and why.
+
+1. STORAGE CATEGORY
+Owing to the distance from the central laboratory, the plasma specimen storage category at this unit is frozen.
+
+Specimens are batched and dispatched three times weekly rather than daily.
+2. MONITORING
+Storage equipment is temperature-logged continuously; excursions trigger an
+alert to the on-call biomedical scientist.
+
+3. RATIONALE
+The arrangement in section 1 reflects transport time to the central laboratory
+and was agreed with the parent laboratory at adoption.

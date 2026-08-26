@@ -1,0 +1,47 @@
+OBSERVATION PHASE PROTOCOL — VERSION 3
+Northgate General NHS Foundation Trust | Research Governance Office
+Document ref: NGH-RGO-OP-003 | Supersedes: version 2 (withdrawn)
+Distribution: site investigators, senior nursing staff, pharmacy, laboratory
+
+1. PURPOSE AND STATUS
+This document sets out observation-phase procedures in force at this site. It
+is read alongside the master protocol and does not vary it except where this
+document says so explicitly. Where the two conflict and this document is silent
+on the conflict, the master protocol governs.
+
+2. SCOPE
+Applies to every participant enrolled after the effective date recorded in
+section 4. Participants enrolled under version 2 continue on the version 2
+schedule until their observation phase completes; they are not transitioned
+mid-phase.
+
+3. ROLES
+The site investigator holds overall responsibility. Day-to-day conduct of the
+observation phase is delegated to the senior nurse on duty. Pharmacy holds
+responsibility for concurrent medication review and is consulted before any
+change to a participant's regular therapy.
+
+4. OBSERVATION SCHEDULE
+Right, I've been through the v3 protocol end to end. Most of it is unchanged from v2, so I'll only flag what differs.
+
+Observations during the observation phase are meant to run every four hours at minimum — that seems to be the floor, though staff can go tighter where they judge it necessary.
+
+The version came into force on 15 January 2026 and supersedes every schedule circulated before that date.
+
+On concurrent medication:
+  - anticoagulant therapy is permitted, provided the participant was already stabilised on a maintenance dose
+  - dose changes mid-study need sign-off
+5. RECORD KEEPING
+Entries are made in the participant record contemporaneously. Retrospective
+entry is a recurring audit finding and is not acceptable. Deviations are logged
+in the deviation register and reviewed monthly by the governance office.
+
+6. TRAINING
+Staff complete protocol-specific training before working unsupervised on the
+observation ward. Training records are held by the research nurse.
+
+7. REVIEW
+Reviewed annually, or on amendment of the master protocol, whichever falls
+sooner. Amendments are circulated to the distribution list above and the
+superseded version withdrawn from the shared drive on the day the amendment
+takes effect.

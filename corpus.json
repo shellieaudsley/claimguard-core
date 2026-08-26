@@ -1,0 +1,140 @@
+{
+  "_readme": "Three sites in a multi-centre study. Each site holds its own operations corpus; documents never leave the site. Passages are written so that every planted conflict is decidable by exactly one mechanism, letting you show which layer fired. 'gold' is the answer key - do not ship it to clients.",
+
+  "clients": {
+    "site-a": {
+      "label": "Northgate General",
+      "passages": [
+        {"doc_id": "protocol_v3", "start": 0, "end": 118, "text": "Following enrolment, participants enter the observation phase. Vital signs are recorded by the assigned nurse at each interval."},
+        {"doc_id": "protocol_v3", "start": 119, "end": 231, "text": "The minimum monitoring interval during the observation phase is 4 hours. Shorter intervals may be used at clinical discretion."},
+        {"doc_id": "protocol_v3", "start": 232, "end": 349, "text": "This version of the protocol takes effect on 2026-01-15 and supersedes all previously circulated observation schedules."},
+        {"doc_id": "protocol_v3", "start": 350, "end": 470, "text": "Concurrent anticoagulant therapy is permitted for participants already stabilised on a maintenance dose prior to enrolment."},
+        {"doc_id": "sop_lab", "start": 0, "end": 96, "text": "Plasma specimens are held in refrigerated storage until the daily courier collection at 16:00."},
+        {"doc_id": "sop_lab", "start": 97, "end": 205, "text": "Specimen storage category for plasma is refrigerated. Frozen storage is reserved for the long-term archive."},
+        {"doc_id": "escalation_memo", "start": 0, "end": 142, "text": "Where a participant deteriorates outside scheduled review, the matter is referred without delay to the on-call consultant, who holds decision authority."},
+        {"doc_id": "escalation_memo", "start": 143, "end": 248, "text": "Nursing staff should document the referral in the participant record at the time it is made, not retrospectively."},
+        {"doc_id": "staffing", "start": 0, "end": 88, "text": "The observation ward operates with a nurse-to-participant ratio of 1 to 6 on day shifts."},
+        {"doc_id": "staffing", "start": 89, "end": 178, "text": "Night shift cover is provided by two registered nurses and one healthcare assistant."}
+      ]
+    },
+
+    "site-b": {
+      "label": "Riverside Trust",
+      "passages": [
+        {"doc_id": "protocol_v7", "start": 0, "end": 104, "text": "Participants are reviewed on a fixed schedule throughout the observation phase, as set out below."},
+        {"doc_id": "protocol_v7", "start": 105, "end": 214, "text": "The minimum monitoring interval during the observation phase is 6 hours. Deviations must be logged."},
+        {"doc_id": "protocol_v7", "start": 215, "end": 338, "text": "Concurrent anticoagulant therapy is not permitted at any point during the observation phase, irrespective of prior stabilisation."},
+        {"doc_id": "protocol_v7", "start": 339, "end": 452, "text": "Where a participant's condition changes unexpectedly, the duty registrar assumes responsibility for the clinical decision."},
+        {"doc_id": "sop_lab_rt", "start": 0, "end": 110, "text": "Plasma specimens are kept under refrigeration pending transfer. Ambient storage is not acceptable for this analyte."},
+        {"doc_id": "sop_lab_rt", "start": 111, "end": 199, "text": "Transfer to the central laboratory occurs twice daily, at 11:00 and at 17:30."},
+        {"doc_id": "ops_note", "start": 0, "end": 95, "text": "The observation ward runs a nurse-to-participant ratio of 1 to 6 across all day shifts."},
+        {"doc_id": "ops_note", "start": 96, "end": 190, "text": "Weekend staffing follows the weekday establishment with no reduction in registered nurse cover."},
+        {"doc_id": "consent_addendum", "start": 0, "end": 132, "text": "Participants are given a minimum of 24 hours to consider the information sheet before consent is sought."},
+        {"doc_id": "consent_addendum", "start": 133, "end": 240, "text": "A witnessed signature is required where the participant cannot read the information sheet unaided."}
+      ]
+    },
+
+    "site-c": {
+      "label": "Eastfield Unit",
+      "passages": [
+        {"doc_id": "handbook", "start": 0, "end": 112, "text": "Local practice for the observation phase is described here for staff induction and does not replace the protocol."},
+        {"doc_id": "handbook", "start": 113, "end": 236, "text": "Observations are taken at a minimum interval of 240 minutes during the observation phase, in line with the study protocol."},
+        {"doc_id": "handbook", "start": 237, "end": 344, "text": "Concurrent anticoagulant therapy is permitted where a maintenance dose was established before enrolment."},
+        {"doc_id": "protocol_local", "start": 0, "end": 128, "text": "The protocol version in force at this unit takes effect on 2026-03-01, following completion of local governance review."},
+        {"doc_id": "protocol_local", "start": 129, "end": 244, "text": "Staff should not apply the schedule set out in earlier circulated drafts once the effective date has passed."},
+        {"doc_id": "lab_annex", "start": 0, "end": 104, "text": "Plasma specimen storage category at this unit is frozen, owing to the distance from the central laboratory."},
+        {"doc_id": "lab_annex", "start": 105, "end": 208, "text": "Specimens are batched and dispatched three times weekly rather than daily."},
+        {"doc_id": "duty_roster", "start": 0, "end": 98, "text": "Unscheduled deterioration is escalated to the on-call consultant in the first instance."},
+        {"doc_id": "duty_roster", "start": 99, "end": 186, "text": "The consultant may delegate to a senior registrar where the situation is judged stable."},
+        {"doc_id": "induction", "start": 0, "end": 120, "text": "New staff complete a half-day induction covering consent, observation practice and specimen handling."}
+      ]
+    }
+  },
+
+  "gold": {
+    "_note": "Each entry names the mechanism that SHOULD decide it. If a different layer fires, that is a bug worth showing.",
+
+    "conflicts": [
+      {
+        "id": "K1",
+        "referent": "monitoring_interval",
+        "mechanism": "structural:numeric",
+        "pair": ["site-a/protocol_v3", "site-b/protocol_v7"],
+        "values": ["4 hours", "6 hours"],
+        "load_bearing": true,
+        "why": "Plain numeric disagreement, same unit. Layer 1 must catch this with zero model involvement."
+      },
+      {
+        "id": "K2",
+        "referent": "protocol_effective_date",
+        "mechanism": "structural:date",
+        "pair": ["site-a/protocol_v3", "site-c/protocol_local"],
+        "values": ["2026-01-15", "2026-03-01"],
+        "load_bearing": true,
+        "why": "Version drift across sites. Date comparison, not semantics."
+      },
+      {
+        "id": "K3",
+        "referent": "concurrent_anticoagulant",
+        "mechanism": "structural:negation",
+        "pair": ["site-a/protocol_v3", "site-b/protocol_v7"],
+        "values": ["permitted", "not permitted"],
+        "load_bearing": true,
+        "why": "Polarity flip on a shared referent. Catchable without NLI if the extractor sets polarity correctly - this is the test of your extraction step, not your checker."
+      },
+      {
+        "id": "K4",
+        "referent": "escalation_authority",
+        "mechanism": "nli",
+        "pair": ["site-a/escalation_memo", "site-b/protocol_v7"],
+        "values": ["on-call consultant", "duty registrar"],
+        "load_bearing": true,
+        "why": "No numbers, no negation, near-zero lexical overlap. Layer 1 must ABSTAIN and hand this to NLI. This is the passage that justifies keeping a model in the loop."
+      },
+      {
+        "id": "K5",
+        "referent": "specimen_storage_category",
+        "mechanism": "structural:enum",
+        "pair": ["site-a/sop_lab", "site-c/lab_annex"],
+        "values": ["refrigerated", "frozen"],
+        "load_bearing": false,
+        "why": "Real conflict but NOT load-bearing. Under the default escalation policy this is detected and logged, not surfaced. Use it to demo that you are not spamming the human."
+      }
+    ],
+
+    "unit_trap": [
+      {
+        "id": "K6",
+        "referent": "monitoring_interval",
+        "mechanism": "structural:unit-mismatch -> UNDECIDED",
+        "pair": ["site-a/protocol_v3", "site-c/handbook"],
+        "values": ["4 hours", "240 minutes"],
+        "why": "These AGREE, but only after unit normalisation. Un-normalised, the checker must abstain rather than report 4 vs 240 as a conflict. Silent false positives are how a safety tool loses trust; make the abstain visible in the demo, then add normalisation and watch it flip to corroborates."
+      }
+    ],
+
+    "corroborations": [
+      {
+        "id": "K7",
+        "referent": "nurse_ratio_day",
+        "pair": ["site-a/staffing", "site-b/ops_note"],
+        "values": ["1:6", "1:6"],
+        "why": "Agreement across sites. Must pass silently - no escalation."
+      },
+      {
+        "id": "K8",
+        "referent": "escalation_authority",
+        "pair": ["site-a/escalation_memo", "site-c/duty_roster"],
+        "values": ["on-call consultant", "on-call consultant"],
+        "why": "Two of three sites agree; site-b is the outlier. Good material for showing majority context alongside the conflict rather than just a bare pair."
+      }
+    ],
+
+    "independent": [
+      {
+        "id": "K9",
+        "why": "consent_addendum (site-b) and induction (site-c) share no referent with anything else. Must produce no edges at all. If these generate pairs, your blocking is too loose."
+      }
+    ]
+  }
+}
