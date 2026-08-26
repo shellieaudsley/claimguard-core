@@ -1,6 +1,6 @@
 # claimguard - symbolic-first conflict typing for preserving disagreement in multi-agent systems
 
-![How it works](claimguard-header.png)
+![How it works](assets/claimguard-header.png)
 
 **Disagreement safety for multi-agent systems.** When agents fan out and something
 merges their findings, the merge deletes disagreement among agents and conflicts in the retrieved information — one step before the only
