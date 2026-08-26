@@ -233,37 +233,6 @@ wire.
 
 ---
 
-## Integrating with a closed claim contract
-
-`silosafe.py` adapts [SiloSafe](https://github.com/amargandhi/silo-safe)'s
-seven-field wire claim without adding a field to it. Their schema is closed by
-design — `_exact_keys` rejects extras and a test asserts `quote` is refused —
-and nothing here asks that to change.
-
-Their `evidence_token` is a **commitment**, not a locator:
-
-```
-token = "ev_" + sha256(case_id|silo_id|record_id|quote)[:16]
-```
-
-It leaks less than a locator and it proves the silo cannot change its story.
-What it cannot prove is that the quote was ever in the record — **a fabricated
-quote mints a perfectly valid token**. Two additive fixes, neither touching the
-contract:
-
-- `mint_checked()` — the silo verifies `quote ⊆ record` before minting.
-  Fabrication is caught where the record exists, which is the only place it can
-  be. After emission nobody can.
-- `Reveal` — on request, the owning silo returns the four preimage parts and
-  anyone recomputes the digest. Selective disclosure, per escalation.
-
-One blind spot is not fixable downstream: **the contract has no `polarity`
-field**, so `permitted` and `not permitted` arrive as the same value string and
-read as agreement. Folding the negation into `value` at extraction
-(`not_permitted`) restores the conflict and needs no schema change.
-
----
-
 ## Layout - what the tools do
 
 ```
