@@ -1,16 +1,21 @@
-# claimguard
+# claimguard - symbolic-first conflict typing for preserving disagreement in multi-agent systems
+
+![Project architecture](assets/social-card.png)
 
 **Disagreement safety for multi-agent systems.** When agents fan out and something
-merges their findings, the merge deletes disagreement — one step before the only
+merges their findings, the merge deletes disagreement among agents and conflicts in the retrieved information — one step before the only
 human checkpoint. This replaces the merge step, and a reviewer can verify every
-finding without anyone handing over their documents.
+finding without anyone handing over their documents. Agent disagreement and conflicted information can now become informative human decision. 
+
+> **_NOTE:_**  1. This work was designed at the [Collaborative Agent Hackathon](https://discuss.flower.ai/t/collaborative-agent-hackathon-cambridge-uk-2026/1269) hosted by the federated learning framework [flower.ai](https://flower.ai/) on August 26, 2026 in Cambridge, UK, 2026. The core logics (claimguard.py, aggregate.py & nli.py) are modular & can be adapted for use with different models (MNLI models, LLM for prose extraction, agents) & input data.
+> 2. The full hackathon implementation for this in a Flower Agent [claimguard](https://flower.ai/apps/amargandhi/claimguard-agent) by our team ('Dissensus') was completed by my teammate [Amar Gandhi](https://github.com/amargandhi) – the repo for it is here: [Silo-Safe][=(https://github.com/amargandhi/silo-safe).
 
 ---
 
 ## The problem is a type signature, not a bug
 
 Vote, summarise, concatenate-and-ask-a-model: every merge is a function from a
-**set** of values to **one** value. Lossy by construction. Give the baseline
+**set** of values to **one** value. Lossy by construction as a set of values is compressed to one value. Give the baseline
 every advantage — all sources, majority vote — and it is still exactly wrong
 where it matters:
 
@@ -25,6 +30,9 @@ conflicts detected                     0               7
 abstentions kept visible               —               2
 false conflicts raised                 0               0
 ```
+Reproduce it with `table.py`: `make table NLI=local` (`make table` alone runs Layer 1 only —
+the model's two cases move from `conflicts` to `abstentions`, and nothing
+becomes wrong). 
 
 The merge is right on the two referents where sources agree. It still deletes
 all four load-bearing disagreements. No such function can do otherwise.
@@ -69,6 +77,42 @@ fabricated citation, and it refuses to emit.
 
 ## Deterministic first, model second
 
+Every cross-silo pair becomes a typed edge carrying a relation
+(`CORROBORATES` / `CONFLICTS` / `UNDECIDED` / `INDEPENDENT`) and — the
+load-bearing part — a **basis** naming which layer decided and how:
+`structural:numeric`, `structural:date`, `structural:enum`,
+`structural:boolean`, `structural:negation`, `structural:unit-mismatch`,
+`structural:type-mismatch`, `structural:unparsed`, `structural:text`, `nli`,
+`nli:low-confidence`. A bare "they conflict" is an opinion;
+`conflicts [structural:date]` is a checkable fact that needed no model, and
+`undecided [structural:unit-mismatch]` tells you the system declined rather
+than agreed.
+
+```
+$ make table NLI=local ARGS=--edges
+
+VERDICT: HOLD | 12 relations | 7 conflicts, 6 escalated | 2 abstentions
+
+concurrent_anticoagulant   a/b  CONFLICTS    [structural:negation]       same referent, opposite polarity
+concurrent_anticoagulant   a/c  CORROBORATES [structural:boolean]        permitted vs permitted
+concurrent_anticoagulant   b/c  CONFLICTS    [structural:negation]       same referent, opposite polarity
+escalation_authority       a/b  CONFLICTS    [nli]                       contradiction
+escalation_authority       a/c  CORROBORATES [nli]                       entailment
+escalation_authority       b/c  CONFLICTS    [nli]                       contradiction
+monitoring_interval        a/b  CONFLICTS    [structural:numeric]        4.0 vs 6.0
+monitoring_interval        a/c  UNDECIDED    [structural:unit-mismatch]  'hour' vs 'minute' - normalise before comparing
+monitoring_interval        b/c  UNDECIDED    [structural:unit-mismatch]  'hour' vs 'minute' - normalise before comparing
+nurse_ratio_day            a/b  CORROBORATES [structural:enum]           1:6 vs 1:6
+protocol_effective_date    a/c  CONFLICTS    [structural:date]           2026-01-15 vs 2026-03-01
+specimen_storage_category  a/c  CONFLICTS    [structural:enum]           refrigerated vs frozen
+```
+
+Using the example corpus of claims (demo case: retrieved documents concerning observation protocols across hospitals), nine of the twelve were decided with no model. The three `escalation_authority`
+rows are the model's entire contribution, and the two `monitoring_interval`
+abstentions are the gate declining on `4 hours` vs `240 minutes` — the values
+agree, and reporting them as a conflict is the false positive this exists to
+avoid.
+
 **Layer 1 — structural.** Typed comparison: numbers (unit-aware), dates, enums,
 booleans, negation. Exact, auditable, no model. It **abstains** rather than
 guessing, and says why:
@@ -100,7 +144,7 @@ fatigue is itself a safety failure.
 
 ```bash
 python acceptance.py --nli local     # all 9 gold cases
-python -m pytest tests -q            # 51 tests
+python -m pytest tests -q            # 56 tests
 ```
 
 `corpus.json` ships a `gold` key naming, per case, **the mechanism that should
@@ -174,7 +218,7 @@ wire.
   gold cases reachable — its referents drift, so no pair forms and the run goes
   green having checked nothing. `Qwen2.5-3B` reaches 5 of 8 on clean prose.
   Every 0.5B configuration reaches 0/8 on the hard corpus. Ledger in
-  `evidence/`.
+  `evidence/` (for 3B); in the docstrings `test_garbage_extraction_degrades_to_silence_not_to_noise`.
 - **Fed garbage, it goes quiet rather than loud.** At 0.5B all seven spurious
   pairs landed on the decoy referent and every one resolved `UNDECIDED` — **zero
   false escalations**. Degrading to silence is the design; degrading to noise
@@ -183,7 +227,7 @@ wire.
   `end - start != len(text)` and the declared starts overlap, so no document
   satisfies them. Its locators resolve only relative to the passage that
   produced them. `corpus_hard.json` has computed offsets and real documents
-  under `documents_hard/`, which is why the reviewer-verification demo uses it.
+  under `documents_hard/`, which is why the reviewer-verification demo uses it. (Note this was an error in the synthetic corpus generated by Claude Opus 5.)
 - **The aggregator says the sources disagree.** It does not say which is right,
   and it should not pretend to.
 
@@ -220,7 +264,7 @@ read as agreement. Folding the negation into `value` at extraction
 
 ---
 
-## Layout
+## Layout - what the tools do
 
 ```
 claimguard.py   schema, blocking, structural typing, escalation policy
@@ -240,3 +284,13 @@ disclosure.py   what may leave a silo: Budget + min_support
 `claimguard.py` + `aggregate.py` is 512 lines and imports nothing outside the
 standard library. `torch` and `transformers` are needed only for Layer 2 and
 are imported lazily; without them K4 and K8 degrade to `UNDECIDED` and say so.
+
+`disclosure.py` was meant for use in a federated setting where data cannot leave a silo. It'll need to be linked to `escalate()`. 
+
+## Future tests
+
+[] make `INCOMPLETE` more actionable than just overfiring/stopping; 
+[] test on real & larger corpora 
+[] better referent alignment beyond close matches
+
+
