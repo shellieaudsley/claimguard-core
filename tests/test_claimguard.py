@@ -23,8 +23,8 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import extract  # noqa: E402
 import acceptance  # noqa: E402
+import extract  # noqa: E402
 import units  # noqa: E402
 from aggregate import claimguard_merge, naive_merge  # noqa: E402
 from claimguard import (  # noqa: E402
@@ -1008,3 +1008,115 @@ def test_case_report_renders_polarity_and_carries_no_document_text():
     assert "NOT 'permitted'" in text
     for esc in report.escalations:
         assert all(s["quote"] is None for s in esc["spans"])
+
+
+# ------------------------------------------------- SiloSafe contract
+
+
+def test_silosafe_contract_is_not_modified():
+    """The adapter must work with the closed schema, not around it.
+
+    `_exact_keys` rejects extra fields and `test_silo_report_rejects_quote_field`
+    asserts `quote` is refused. Both are deliberate. Anything here that needed
+    an eighth field would be a proposal to break their tests, not an adapter.
+    """
+    import silosafe
+
+    record = {"claim_id": "b1", "referent": "monitoring_interval", "value": "6",
+              "value_type": "numeric", "unit": "hours",
+              "evidence_token": "ev_abc123", "confidence": 0.9}
+    assert set(record) == silosafe.CONTRACT_KEYS
+
+    claim = silosafe.to_claim(record, "site-b")
+    assert claim.client_id == "site-b"
+    assert claim.value == "6"
+
+    with pytest.raises(ValueError, match="unexpected keys"):
+        silosafe.to_claim({**record, "quote": "leaked"}, "site-b")
+
+
+def test_evidence_token_is_a_commitment_not_a_locator():
+    """The distinction the whole integration turns on.
+
+    A token proves the silo did not change its story. It cannot be resolved to
+    a location, so it is carried as provenance and rendered as a commitment —
+    never as `doc:start-end`, which would claim more than it can deliver.
+    """
+    import silosafe
+
+    claim = silosafe.to_claim(
+        {"claim_id": "b1", "referent": "r", "value": "6", "value_type": "numeric",
+         "unit": "h", "evidence_token": "ev_abc123", "confidence": 0.9},
+        "site-b",
+    )
+    span = claim.spans[0]
+    assert silosafe.is_commitment(span)
+    assert silosafe.token_of(span) == "ev_abc123"
+    assert span.start == span.end == 0, "a commitment has no extent"
+    assert span.quote is None
+
+
+def test_a_fabricated_quote_mints_a_valid_token_and_checked_minting_refuses_it():
+    """The gap, and the fix, in one test.
+
+    Nothing in the digest checks `quote ⊆ record(record_id)`, so an invented
+    quote produces a well-formed, verifiable-looking token. Only the silo holds
+    the record, so only the silo can catch it — after emission nobody can.
+    """
+    import silosafe
+
+    record = "The minimum monitoring interval is 6 hours. Deviations logged."
+
+    fabricated = silosafe.mint("c1", "site-b", "rec-7", "interval is 90 minutes")
+    assert fabricated.startswith("ev_") and len(fabricated) == 19, \
+        "a fabricated quote mints a perfectly well-formed token"
+
+    assert silosafe.mint_checked(
+        "c1", "site-b", "rec-7", "interval is 6 hours", record
+    ).startswith("ev_")
+    with pytest.raises(ValueError, match="quote not found"):
+        silosafe.mint_checked(
+            "c1", "site-b", "rec-7", "interval is 90 minutes", record
+        )
+
+
+def test_reveal_lets_a_reviewer_verify_without_holding_silo_data():
+    """Selective disclosure: the preimage, per escalation, on request."""
+    import silosafe
+
+    token = silosafe.mint("c1", "site-b", "rec-7", "interval is 6 hours")
+    honest = silosafe.Reveal(token, "c1", "site-b", "rec-7", "interval is 6 hours")
+    altered = silosafe.Reveal(token, "c1", "site-b", "rec-7", "interval is 8 hours")
+
+    assert silosafe.check_reveal(token, honest)
+    assert not silosafe.check_reveal(token, altered)
+
+
+def test_missing_polarity_turns_a_contradiction_into_consensus():
+    """The contract's one real blind spot, pinned so it cannot be forgotten.
+
+    With no `polarity` field, `permitted` and `not permitted` arrive as the
+    same value string and the gate reads agreement. The information was
+    destroyed upstream; no aggregator can recover it.
+    """
+    import silosafe
+
+    def rec(cid, value):
+        return {"claim_id": cid, "referent": "concurrent_anticoagulant",
+                "value": value, "value_type": "boolean", "unit": None,
+                "evidence_token": f"ev_{cid}", "confidence": 0.9}
+
+    both = (silosafe.to_claims([rec("b1", "permitted")], "site-b",
+                               load_bearing=["concurrent_anticoagulant"])
+            + silosafe.to_claims([rec("c1", "permitted")], "site-c",
+                                 load_bearing=["concurrent_anticoagulant"]))
+    import gate
+    assert gate.evaluate(both).verdict == gate.READY, "reads as agreement"
+
+    # Folding the negation into `value` restores the conflict, no schema change.
+    fixed = (silosafe.to_claims([rec("b1", "not_permitted")], "site-b",
+                                load_bearing=["concurrent_anticoagulant"])
+             + silosafe.to_claims([rec("c1", "permitted")], "site-c",
+                                  load_bearing=["concurrent_anticoagulant"]))
+    assert gate.evaluate(fixed).verdict == gate.HOLD
+    assert "polarity" in silosafe.polarity_note()
