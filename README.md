@@ -2,10 +2,30 @@
 
 ![How it works](assets/claimguard-header.png)
 
+tl;dr - It’s a deterministic gate that types every disagreement, labels every conflict with the mechanism that found it and escalates only the ones someone can act on. Agents that disagree becomes a checkable, informative fact. Highlights: §'Deterministic first, model second', the abstention taxonomy ('Layer 1') &c. This is useful in agentic systems with these conditions: 1) multiple parties hold documents they won't/can't pool, 2) comparable facts are stated in each, 3) disagreement is consequential, as in regulated settings or when something acts on the answer downstream, 4) silent wrongness costs more than slowness. Domain uses: 
+
+**1. clinical/bioNLP**:
+- multi-site trial protocol reconciliation (the demo case in this repo)
+- guideline conflicts (national vs trust vs departmental SOP)
+- systematic review extraction where N papers report the same outcome differently
+- pharmacovigilance 
+
+**2. legal tech**:  
+- contract review across counterparties (see e.g. `notice_period` in the demo)
+- due diligence across data rooms
+- conflicting clauses on governing law or liability caps
+- regulatory compliance where policy / regulation / local procedure disagree
+
+**3. enterprise settings e.g. fintech, security 🤔**: 
+- multi-vendor security attestations
+- standards conformance across implementations
+- financial reconciliation between subsidiaries 
+
+
 **Disagreement safety for multi-agent systems.** When agents fan out and something
 merges their findings, the merge deletes disagreement among agents and conflicts in the retrieved information — one step before the only
 human checkpoint. This replaces the merge step, and a reviewer can verify every
-finding without anyone handing over their documents. Agent disagreement and conflicted information can now become informative human decision. 
+finding without anyone handing over their documents. Agent disagreement and conflicted information can now become informative for human decision. 
 
 > **_NOTE:_**  1. This work was designed at the [Collaborative Agent Hackathon](https://discuss.flower.ai/t/collaborative-agent-hackathon-cambridge-uk-2026/1269) hosted by the federated learning framework [flower.ai](https://flower.ai/) on August 26, 2026 in Cambridge, UK, 2026. The core logics (claimguard.py, aggregate.py & nli.py) are modular & can be adapted for use with different models (MNLI models, LLM for prose extraction, agents) & input data.
 > 2. The full hackathon implementation for this in a Flower Agent [claimguard](https://flower.ai/apps/amargandhi/claimguard-agent) by our team ('Dissensus') was completed by my teammate [Amar Gandhi](https://github.com/amargandhi) – the repo for it is here: [Silo-Safe][=(https://github.com/amargandhi/silo-safe).
@@ -123,6 +143,13 @@ guessing, and says why:
 | `structural:unit-mismatch` | 4 hours vs 240 minutes — needs arithmetic | no |
 | `structural:type-mismatch` | a number against a string — schema bug | no |
 | `structural:unparsed` | the value did not parse — extractor bug | no |
+| `structural:negation-ambiguous` | 'permitted' vs NOT 'prohibited', polarity differs + values differ - need antonyms | no |
+
+N.B polarity here is the claim's literal sign in the logical sense, it has no deontic knowledge in the current set-up. 
+N.B. `structural:negation-ambiguous` is the one abstention an NLI model could plausibly
+decide — but only if `resolve()` folds polarity into the text it sends. Without
+that the model sees `permitted` against `prohibited`, negation invisible, and
+returns contradiction at 0.999.
 
 **Layer 2 — NLI.** A 184M cross-encoder on the prose residue only. Below
 threshold the edge stays `UNDECIDED`.
@@ -144,7 +171,7 @@ fatigue is itself a safety failure.
 
 ```bash
 python acceptance.py --nli local     # all 9 gold cases
-python -m pytest tests -q            # 56 tests
+python -m pytest tests -q            # 57 tests
 ```
 
 `corpus.json` ships a `gold` key naming, per case, **the mechanism that should
@@ -258,8 +285,9 @@ are imported lazily; without them K4 and K8 degrade to `UNDECIDED` and say so.
 
 ## Future tests
 
-[] make `INCOMPLETE` more actionable than just overfiring/stopping; 
-[] test on real & larger corpora 
+[] make `INCOMPLETE` more actionable than just overfiring/stopping
+[] NLI routing needs improvements 
+[] test on real & larger corpora, in cases where one compares blind
 [] better referent alignment beyond close matches
 
 
