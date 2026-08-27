@@ -2,6 +2,11 @@
 
 ![How it works](assets/claimguard-header.png)
 
+**Disagreement safety for multi-agent systems.** When agents fan out and something
+merges their findings, the merge deletes disagreement among agents and conflicts in the retrieved information — one step before the only
+human checkpoint. This replaces the merge step, and a reviewer can verify every
+finding without anyone handing over their documents. Agent disagreement and conflicted information can now become informative for human decision. 
+
 tl;dr - It’s a deterministic gate that types every disagreement, labels every conflict with the mechanism that found it and escalates only the ones someone can act on. Agents that disagree becomes a checkable, informative fact. Highlights: §'Deterministic first, model second', the abstention taxonomy ('Layer 1') &c. This is useful in agentic systems with these conditions: 1) multiple parties hold documents they won't/can't pool, 2) comparable facts are stated in each, 3) disagreement is consequential, as in regulated settings or when something acts on the answer downstream, 4) silent wrongness costs more than slowness. Domain uses: 
 
 **1. clinical/bioNLP**:
@@ -21,11 +26,6 @@ tl;dr - It’s a deterministic gate that types every disagreement, labels every 
 - standards conformance across implementations
 - financial reconciliation between subsidiaries 
 
-
-**Disagreement safety for multi-agent systems.** When agents fan out and something
-merges their findings, the merge deletes disagreement among agents and conflicts in the retrieved information — one step before the only
-human checkpoint. This replaces the merge step, and a reviewer can verify every
-finding without anyone handing over their documents. Agent disagreement and conflicted information can now become informative for human decision. 
 
 > **_NOTE:_**  1. This work was designed at the [Collaborative Agent Hackathon](https://discuss.flower.ai/t/collaborative-agent-hackathon-cambridge-uk-2026/1269) hosted by the federated learning framework [flower.ai](https://flower.ai/) on August 26, 2026 in Cambridge, UK, 2026. The core logics (claimguard.py, aggregate.py & nli.py) are modular & can be adapted for use with different models (MNLI models, LLM for prose extraction, agents) & input data.
 > 2. The modified hackathon implementation for this in a Flower Agent [claimguard](https://flower.ai/apps/amargandhi/claimguard-agent) by our team ('Dissensus') was completed by my teammate [Amar Gandhi](https://github.com/amargandhi) – the repo for it is here: [Silo-Safe](https://github.com/amargandhi/silo-safe).
