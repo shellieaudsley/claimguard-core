@@ -28,7 +28,7 @@ human checkpoint. This replaces the merge step, and a reviewer can verify every
 finding without anyone handing over their documents. Agent disagreement and conflicted information can now become informative for human decision. 
 
 > **_NOTE:_**  1. This work was designed at the [Collaborative Agent Hackathon](https://discuss.flower.ai/t/collaborative-agent-hackathon-cambridge-uk-2026/1269) hosted by the federated learning framework [flower.ai](https://flower.ai/) on August 26, 2026 in Cambridge, UK, 2026. The core logics (claimguard.py, aggregate.py & nli.py) are modular & can be adapted for use with different models (MNLI models, LLM for prose extraction, agents) & input data.
-> 2. The full hackathon implementation for this in a Flower Agent [claimguard](https://flower.ai/apps/amargandhi/claimguard-agent) by our team ('Dissensus') was completed by my teammate [Amar Gandhi](https://github.com/amargandhi) – the repo for it is here: [Silo-Safe][(https://github.com/amargandhi/silo-safe).
+> 2. The full hackathon implementation for this in a Flower Agent [claimguard](https://flower.ai/apps/amargandhi/claimguard-agent) by our team ('Dissensus') was completed by my teammate [Amar Gandhi](https://github.com/amargandhi) – the repo for it is here: [Silo-Safe](https://github.com/amargandhi/silo-safe).
 
 ---
 
@@ -67,19 +67,19 @@ The aggregator holds a pointer and **cannot read it** — it has no documents.
 Each site resolves its own and nobody else's:
 
 ```console
-$ python silo.py --site site-b --resolve claims/escalations.jsonl --check documents_hard
+$ python3 silo.py --site site-b --resolve claims/escalations.jsonl --check documents_hard
 site-b resolving its own pointers:
   concurrent_anticoagulant
     pointer  protocol_v7:814-863
     resolves 'Concurrent anticoagulant therapy is not permitted'
 
-$ python silo.py --site site-c --resolve claims/escalations.jsonl --check documents_hard
+$ python3 silo.py --site site-c --resolve claims/escalations.jsonl --check documents_hard
 site-c resolving its own pointers:
   concurrent_anticoagulant
     pointer  handbook:649-694
     resolves 'Concurrent anticoagulant therapy is permitted'
 
-$ python silo.py --site site-a --resolve claims/escalations.jsonl --check documents_hard
+$ python3 silo.py --site site-a --resolve claims/escalations.jsonl --check documents_hard
 site-a resolving its own pointers:
   (no spans belong to this site)
 ```
@@ -170,8 +170,8 @@ fatigue is itself a safety failure.
 ## Verify the claims in this README
 
 ```bash
-python acceptance.py --nli local     # all 9 gold cases
-python -m pytest tests -q            # 57 tests
+python3 acceptance.py --nli local     # all 9 gold cases
+python3 -m pytest tests -q            # 57 tests
 ```
 
 `corpus.json` ships a `gold` key naming, per case, **the mechanism that should
@@ -196,7 +196,7 @@ K5  conflicts [structural:enum] silent
 
 ```bash
 cat claims.jsonl | python claimio.py > edges.jsonl
-python claimio.py --in claims.jsonl --edges edges.jsonl --escalations esc.jsonl
+python3 claimio.py --in claims.jsonl --edges edges.jsonl --escalations esc.jsonl
 ```
 
 **In-process:**
@@ -211,7 +211,7 @@ result.edges         # everything, typed, with its basis
 
 **As a gate** (`INCOMPLETE` / `HOLD` / `READY_FOR_HUMAN_REVIEW`):
 
-```python
+```python3
 from gate import evaluate
 report = evaluate(claims, nli=None)
 report.verdict       # code-emitted; no model can override it
@@ -277,7 +277,7 @@ silosafe.py     adapter for SiloSafe's closed seven-field contract
 disclosure.py   what may leave a silo: Budget + min_support
 ```
 
-`claimguard.py` + `aggregate.py` is 512 lines and imports nothing outside the
+`claimguard.py` + `aggregate.py` is ~500 lines and imports nothing outside the
 standard library. `torch` and `transformers` are needed only for Layer 2 and
 are imported lazily; without them K4 and K8 degrade to `UNDECIDED` and say so.
 
