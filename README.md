@@ -28,7 +28,7 @@ human checkpoint. This replaces the merge step, and a reviewer can verify every
 finding without anyone handing over their documents. Agent disagreement and conflicted information can now become informative for human decision. 
 
 > **_NOTE:_**  1. This work was designed at the [Collaborative Agent Hackathon](https://discuss.flower.ai/t/collaborative-agent-hackathon-cambridge-uk-2026/1269) hosted by the federated learning framework [flower.ai](https://flower.ai/) on August 26, 2026 in Cambridge, UK, 2026. The core logics (claimguard.py, aggregate.py & nli.py) are modular & can be adapted for use with different models (MNLI models, LLM for prose extraction, agents) & input data.
-> 2. The full hackathon implementation for this in a Flower Agent [claimguard](https://flower.ai/apps/amargandhi/claimguard-agent) by our team ('Dissensus') was completed by my teammate [Amar Gandhi](https://github.com/amargandhi) – the repo for it is here: [Silo-Safe](https://github.com/amargandhi/silo-safe).
+> 2. The modified hackathon implementation for this in a Flower Agent [claimguard](https://flower.ai/apps/amargandhi/claimguard-agent) by our team ('Dissensus') was completed by my teammate [Amar Gandhi](https://github.com/amargandhi) – the repo for it is here: [Silo-Safe](https://github.com/amargandhi/silo-safe).
 
 ---
 
