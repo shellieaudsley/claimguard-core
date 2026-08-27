@@ -170,8 +170,10 @@ fatigue is itself a safety failure.
 ## Verify the claims in this README
 
 ```bash
-python3 acceptance.py --nli local     # all 9 gold cases
-python3 -m pytest tests -q            # 57 tests
+make accept NLI=local     # all 9 gold cases
+make table  NLI=local     # the headline table above
+make test                 # 57 tests
+```
 ```
 
 `corpus.json` ships a `gold` key naming, per case, **the mechanism that should
