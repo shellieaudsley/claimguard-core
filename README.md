@@ -5,7 +5,7 @@
 **Disagreement safety for multi-agent systems.** When agents fan out to work with separate data silos, a vote- or confidence-score-based merge step deletes disagreement among agents and conflicts in the retrieved information — one step before the only
 human checkpoint. This tool replaces this lossy consolidation step, and a reviewer without full access to the distributed data sources can verify every finding without anyone handing over their documents/datasets. Agent disagreement and conflicted information can now become informative for human decision. 
 
-tl;dr - It’s a deterministic gate that types every disagreement (across `numeric`, `boolean`, `enum` & `prose` in extracted claims), labels every conflict with the abstention mechanism that found it (e.g. `negation-ambiguous`) and escalates only the ones someone can act on (`4 hours vs 240 minutes — needs arithmetic`). Agents that disagree becomes a checkable, informative fact; conflicts are detected cheaply and inspectable, before the more challenging bits are routed back to a model. **Highlights in this README.md**: §'Deterministic first, model second', the abstention taxonomy ('Layer 1') &c. This is useful in agentic systems with these conditions: 1) multiple parties hold documents they won't/can't pool, 2) comparable facts are stated in each, 3) disagreement is consequential, as in regulated settings or when something acts on the answer downstream, 4) silent wrongness costs more than slowness. Domain uses: 
+tl;dr - It’s a deterministic gate that types every disagreement (across `numeric`, `boolean`, `enum` & `prose` in extracted claims), labels every conflict with the abstention mechanism that found it (e.g. `negation-ambiguous`) and escalates only the ones someone can act on (`4 hours vs 240 minutes — needs arithmetic`). Agents that disagree becomes a checkable, informative fact; conflicts are detected cheaply and inspectable, before the more challenging bits are routed back to a model. **Highlights in this README.md**: §'Deterministic first, model second', the abstention taxonomy ('Layer 1') &c. This is useful in agentic systems with these privacy-constrained conditions: 1) multiple parties hold documents they won't/can't pool, 2) comparable facts are stated in each, 3) disagreement is consequential, as in regulated settings or when something acts on the answer downstream, 4) silent wrongness costs more than slowness. Domain uses: 
 
 **1. clinical/bioNLP**:
 - multi-site trial protocol reconciliation (the demo case in this repo)
@@ -173,7 +173,7 @@ make accept NLI=local     # all 9 gold cases
 make table  NLI=local     # the headline table above
 make test                 # 57 tests
 ```
-```
+
 
 `corpus.json` ships a `gold` key naming, per case, **the mechanism that should
 decide it**. That is stricter than "did it find the conflict": a case decided by
@@ -181,13 +181,12 @@ the wrong layer is right for the wrong reason and breaks on the next corpus.
 
 
 ```
-K1  conflicts [structural:numeric] escalates      K6  undecided [structural:unit-mismatch] silent  
+K1  conflicts [structural:numeric] escalates      K6  undecided [structural:unit-mismatch], [structural:negation-ambiguous] silent  # 
 K2  conflicts [structural:date] escalates         K7  corroborates [structural:enum] silent
 K3  conflicts [structural:negation] escalates     K8  corroborates [nli] silent
 K4  conflicts [nli] escalates                     K9  no edges
 K5  conflicts [structural:enum] silent
 
-N.B. K6 includes also a newly added [structural:negation-ambiguous]. 
 
 ```
 
