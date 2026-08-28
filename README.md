@@ -2,12 +2,10 @@
 
 ![How it works](assets/claimguard-header.png)
 
-**Disagreement safety for multi-agent systems.** When agents fan out and something
-merges their findings, the merge deletes disagreement among agents and conflicts in the retrieved information — one step before the only
-human checkpoint. This replaces the merge step, and a reviewer can verify every
-finding without anyone handing over their documents. Agent disagreement and conflicted information can now become informative for human decision. 
+**Disagreement safety for multi-agent systems.** When agents fan out to work with separate data silos, the merge step deletes disagreement among agents and conflicts in the retrieved information — one step before the only
+human checkpoint. This tool replaces this lossy consolidation step, and a reviewer without full access to the distributed data sources can verify every finding without anyone handing over their documents/datasets. Agent disagreement and conflicted information can now become informative for human decision. 
 
-tl;dr - It’s a deterministic gate that types every disagreement, labels every conflict with the mechanism that found it and escalates only the ones someone can act on. Agents that disagree becomes a checkable, informative fact. Highlights: §'Deterministic first, model second', the abstention taxonomy ('Layer 1') &c. This is useful in agentic systems with these conditions: 1) multiple parties hold documents they won't/can't pool, 2) comparable facts are stated in each, 3) disagreement is consequential, as in regulated settings or when something acts on the answer downstream, 4) silent wrongness costs more than slowness. Domain uses: 
+tl;dr - It’s a deterministic gate that types every disagreement (across `numeric`, `boolean`, `enum` & `prose` in extracted claims), labels every conflict with the abstention mechanism that found it (e.g. `negation-ambiguous`) and escalates only the ones someone can act on (`4 hours vs 240 minutes — needs arithmetic`). Agents that disagree becomes a checkable, informative fact; conflicts are detected cheaply and inspectable, before the more challenging bits are routed back to a model. **Highlights in this README.md**: §'Deterministic first, model second', the abstention taxonomy ('Layer 1') &c. This is useful in agentic systems with these conditions: 1) multiple parties hold documents they won't/can't pool, 2) comparable facts are stated in each, 3) disagreement is consequential, as in regulated settings or when something acts on the answer downstream, 4) silent wrongness costs more than slowness. Domain uses: 
 
 **1. clinical/bioNLP**:
 - multi-site trial protocol reconciliation (the demo case in this repo)
@@ -107,6 +105,7 @@ load-bearing part — a **basis** naming which layer decided and how:
 `conflicts [structural:date]` is a checkable fact that needed no model, and
 `undecided [structural:unit-mismatch]` tells you the system declined rather
 than agreed.
+`undecided [structural:negation-ambiguous]` means ambiguous wording (beyond what the symbolic tool can handle) may be present. 
 
 ```
 $ make table NLI=local ARGS=--edges
@@ -181,7 +180,7 @@ decide it**. That is stricter than "did it find the conflict": a case decided by
 the wrong layer is right for the wrong reason and breaks on the next corpus.
 
 ```
-K1  conflicts [structural:numeric] escalates      K6  undecided [structural:unit-mismatch] silent
+K1  conflicts [structural:numeric] escalates      K6  undecided [structural:unit-mismatch] silent  # also [structural:negation-ambiguous]
 K2  conflicts [structural:date] escalates         K7  corroborates [structural:enum] silent
 K3  conflicts [structural:negation] escalates     K8  corroborates [nli] silent
 K4  conflicts [nli] escalates                     K9  no edges
