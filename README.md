@@ -185,8 +185,10 @@ K2  conflicts [structural:date] escalates         K7  corroborates [structural:e
 K3  conflicts [structural:negation] escalates     K8  corroborates [nli] silent
 K4  conflicts [nli] escalates                     K9  no edges
 K5  conflicts [structural:enum] silent
-```
+
 N.B. K6 includes also a newly added [structural:negation-ambiguous]. 
+
+```
 
 **Seven of nine need no model at all.** A model outage costs two cases, not nine.
 
