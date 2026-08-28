@@ -179,6 +179,7 @@ make test                 # 57 tests
 decide it**. That is stricter than "did it find the conflict": a case decided by
 the wrong layer is right for the wrong reason and breaks on the next corpus.
 
+
 ```
 K1  conflicts [structural:numeric] escalates      K6  undecided [structural:unit-mismatch] silent  
 K2  conflicts [structural:date] escalates         K7  corroborates [structural:enum] silent
