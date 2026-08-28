@@ -2,7 +2,7 @@
 
 ![How it works](assets/claimguard-header.png)
 
-**Disagreement safety for multi-agent systems.** When agents fan out to work with separate data silos, the merge step deletes disagreement among agents and conflicts in the retrieved information — one step before the only
+**Disagreement safety for multi-agent systems.** When agents fan out to work with separate data silos, a vote- or confidence-score-based merge step deletes disagreement among agents and conflicts in the retrieved information — one step before the only
 human checkpoint. This tool replaces this lossy consolidation step, and a reviewer without full access to the distributed data sources can verify every finding without anyone handing over their documents/datasets. Agent disagreement and conflicted information can now become informative for human decision. 
 
 tl;dr - It’s a deterministic gate that types every disagreement (across `numeric`, `boolean`, `enum` & `prose` in extracted claims), labels every conflict with the abstention mechanism that found it (e.g. `negation-ambiguous`) and escalates only the ones someone can act on (`4 hours vs 240 minutes — needs arithmetic`). Agents that disagree becomes a checkable, informative fact; conflicts are detected cheaply and inspectable, before the more challenging bits are routed back to a model. **Highlights in this README.md**: §'Deterministic first, model second', the abstention taxonomy ('Layer 1') &c. This is useful in agentic systems with these conditions: 1) multiple parties hold documents they won't/can't pool, 2) comparable facts are stated in each, 3) disagreement is consequential, as in regulated settings or when something acts on the answer downstream, 4) silent wrongness costs more than slowness. Domain uses: 
